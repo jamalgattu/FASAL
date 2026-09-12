@@ -1,4 +1,4 @@
-# AgriSetu — Frontend (SIH Problem 26033 MVP)
+# Fasal — Frontend (SIH Problem 26033 MVP)
 
 Frontend-only prototype: React + TypeScript + Tailwind CSS. No backend, no
 auth, no real APIs, no ML — all data comes from a mock service layer in
