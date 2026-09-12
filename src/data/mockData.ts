@@ -1,0 +1,557 @@
+import {
+  ProduceListing,
+  BuyerRequirement,
+  Match,
+  Order,
+  Route,
+  Vehicle,
+  ImpactDashboardData,
+} from "../types";
+
+// A single logged-in farmer/FPO persona and buyer persona for this MVP demo.
+export const CURRENT_FARMER_ID = "f-001";
+export const CURRENT_FARMER_NAME = "Ramesh Yadav (Sitapur FPO)";
+export const CURRENT_BUYER_ID = "b-001";
+export const CURRENT_BUYER_NAME = "Amrit Retail Chain Pvt Ltd";
+
+const loc = (village: string, district: string, state: string, lat: number, lng: number) => ({
+  village,
+  district,
+  state,
+  lat,
+  lng,
+});
+
+// ---------------------------------------------------------------------
+// PRODUCE LISTINGS (farmer/FPO side)
+// ---------------------------------------------------------------------
+export const produceListings: ProduceListing[] = [
+  {
+    id: "pl-001",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    isFPO: true,
+    crop: "Potato",
+    variety: "Kufri Jyoti",
+    quantity: 8000,
+    unit: "kg",
+    expectedPrice: 14,
+    harvestDate: "2026-09-05",
+    availableDate: "2026-09-08",
+    location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    qualityGrade: "A",
+    status: "matched",
+    quantitySold: 0,
+    createdAt: "2026-09-06T08:30:00+05:30",
+  },
+  {
+    id: "pl-002",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    isFPO: true,
+    crop: "Wheat",
+    variety: "HD-2967",
+    quantity: 120,
+    unit: "quintal",
+    expectedPrice: 2275,
+    harvestDate: "2026-04-10",
+    availableDate: "2026-09-10",
+    location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    qualityGrade: "A",
+    status: "available",
+    quantitySold: 0,
+    createdAt: "2026-09-01T09:00:00+05:30",
+  },
+  {
+    id: "pl-003",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    isFPO: true,
+    crop: "Onion",
+    variety: "Nashik Red",
+    quantity: 5000,
+    unit: "kg",
+    expectedPrice: 18,
+    harvestDate: "2026-08-20",
+    availableDate: "2026-08-25",
+    location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    qualityGrade: "B",
+    status: "in_order",
+    quantitySold: 3000,
+    createdAt: "2026-08-22T10:15:00+05:30",
+  },
+  {
+    id: "pl-004",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    isFPO: true,
+    crop: "Tomato",
+    variety: "Pusa Ruby",
+    quantity: 2500,
+    unit: "kg",
+    expectedPrice: 12,
+    harvestDate: "2026-09-01",
+    availableDate: "2026-09-03",
+    location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    qualityGrade: "A",
+    status: "sold_out",
+    quantitySold: 2500,
+    createdAt: "2026-08-28T07:45:00+05:30",
+  },
+  {
+    id: "pl-005",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    isFPO: true,
+    crop: "Maize",
+    variety: "Hybrid 900M",
+    quantity: 60,
+    unit: "quintal",
+    expectedPrice: 1980,
+    harvestDate: "2026-09-12",
+    availableDate: "2026-09-18",
+    location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    qualityGrade: "B",
+    status: "available",
+    quantitySold: 0,
+    createdAt: "2026-09-09T11:00:00+05:30",
+  },
+];
+
+// Other FPOs' listings — used to populate the buyer's "Available Supply" feed.
+export const otherListings: ProduceListing[] = [
+  {
+    id: "pl-101",
+    farmerId: "f-002",
+    farmerName: "Bareilly Kisan FPO",
+    isFPO: true,
+    crop: "Potato",
+    variety: "Kufri Bahar",
+    quantity: 6000,
+    unit: "kg",
+    expectedPrice: 13,
+    harvestDate: "2026-09-02",
+    availableDate: "2026-09-05",
+    location: loc("Faridpur", "Bareilly", "Uttar Pradesh", 28.5, 79.36),
+    qualityGrade: "A",
+    status: "available",
+    quantitySold: 0,
+    createdAt: "2026-09-05T09:00:00+05:30",
+  },
+  {
+    id: "pl-102",
+    farmerId: "f-003",
+    farmerName: "Hardoi Agro Producer Co.",
+    isFPO: true,
+    crop: "Wheat",
+    variety: "PBW-343",
+    quantity: 200,
+    unit: "quintal",
+    expectedPrice: 2260,
+    harvestDate: "2026-04-15",
+    availableDate: "2026-09-01",
+    location: loc("Sandila", "Hardoi", "Uttar Pradesh", 27.06, 80.53),
+    qualityGrade: "A",
+    status: "available",
+    quantitySold: 0,
+    createdAt: "2026-08-30T09:00:00+05:30",
+  },
+  {
+    id: "pl-103",
+    farmerId: "f-004",
+    farmerName: "Anil Kumar Verma",
+    isFPO: false,
+    crop: "Onion",
+    variety: "Agrifound Light Red",
+    quantity: 3200,
+    unit: "kg",
+    expectedPrice: 19,
+    harvestDate: "2026-08-18",
+    availableDate: "2026-08-22",
+    location: loc("Malihabad", "Lucknow", "Uttar Pradesh", 26.93, 80.71),
+    qualityGrade: "B",
+    status: "available",
+    quantitySold: 0,
+    createdAt: "2026-08-23T09:00:00+05:30",
+  },
+];
+
+export const allListings = [...produceListings, ...otherListings];
+
+// ---------------------------------------------------------------------
+// BUYER REQUIREMENTS
+// ---------------------------------------------------------------------
+export const buyerRequirements: BuyerRequirement[] = [
+  {
+    id: "br-001",
+    buyerId: CURRENT_BUYER_ID,
+    buyerName: CURRENT_BUYER_NAME,
+    buyerType: "Retail Chain",
+    crop: "Potato",
+    variety: "Kufri Jyoti",
+    requiredQuantity: 8000,
+    unit: "kg",
+    acceptablePrice: 15,
+    requiredQuality: "A",
+    deliveryLocation: loc(undefined as any, "Lucknow", "Uttar Pradesh", 26.85, 80.95),
+    requiredDeliveryDate: "2026-09-15",
+    status: "matched",
+    createdAt: "2026-09-06T12:00:00+05:30",
+  },
+  {
+    id: "br-002",
+    buyerId: CURRENT_BUYER_ID,
+    buyerName: CURRENT_BUYER_NAME,
+    buyerType: "Retail Chain",
+    crop: "Onion",
+    variety: "Nashik Red",
+    requiredQuantity: 4000,
+    unit: "kg",
+    acceptablePrice: 20,
+    requiredQuality: "B",
+    deliveryLocation: loc(undefined as any, "Lucknow", "Uttar Pradesh", 26.85, 80.95),
+    requiredDeliveryDate: "2026-09-20",
+    status: "open",
+    createdAt: "2026-09-10T10:00:00+05:30",
+  },
+  {
+    id: "br-003",
+    buyerId: CURRENT_BUYER_ID,
+    buyerName: CURRENT_BUYER_NAME,
+    buyerType: "Retail Chain",
+    crop: "Wheat",
+    variety: "HD-2967",
+    requiredQuantity: 150,
+    unit: "quintal",
+    acceptablePrice: 2300,
+    requiredQuality: "A",
+    deliveryLocation: loc(undefined as any, "Lucknow", "Uttar Pradesh", 26.85, 80.95),
+    requiredDeliveryDate: "2026-09-25",
+    status: "open",
+    createdAt: "2026-09-11T09:30:00+05:30",
+  },
+];
+
+// Requirements from other buyers — used for the farmer's "Buyer Matches" view.
+export const otherRequirements: BuyerRequirement[] = [
+  {
+    id: "br-101",
+    buyerId: "b-002",
+    buyerName: "Sitapur District Mandi Board",
+    buyerType: "Institutional",
+    crop: "Onion",
+    variety: "Nashik Red",
+    requiredQuantity: 3000,
+    unit: "kg",
+    acceptablePrice: 17,
+    requiredQuality: "B",
+    deliveryLocation: loc(undefined as any, "Sitapur", "Uttar Pradesh", 27.57, 80.68),
+    requiredDeliveryDate: "2026-09-14",
+    status: "open",
+    createdAt: "2026-09-08T09:00:00+05:30",
+  },
+  {
+    id: "br-102",
+    buyerId: "b-003",
+    buyerName: "Purvanchal Wholesale Traders",
+    buyerType: "Wholesaler",
+    crop: "Wheat",
+    variety: "HD-2967",
+    requiredQuantity: 100,
+    unit: "quintal",
+    acceptablePrice: 2250,
+    requiredQuality: "A",
+    deliveryLocation: loc(undefined as any, "Sitapur", "Uttar Pradesh", 27.57, 80.68),
+    requiredDeliveryDate: "2026-09-22",
+    status: "open",
+    createdAt: "2026-09-09T09:00:00+05:30",
+  },
+];
+
+export const allRequirements = [...buyerRequirements, ...otherRequirements];
+
+// ---------------------------------------------------------------------
+// MATCHES
+// (match score & reasons are illustrative fixed values — the real
+// matching engine will compute these from live listing/requirement data)
+// ---------------------------------------------------------------------
+export const matches: Match[] = [
+  {
+    id: "m-001",
+    listingId: "pl-001",
+    requirementId: "br-001",
+    matchScore: 91,
+    distanceKm: 35,
+    reasons: [
+      { label: "Quantity compatible", satisfied: true },
+      { label: "Quality compatible", satisfied: true },
+      { label: "Short distance", satisfied: true },
+      { label: "Available within required date", satisfied: true },
+    ],
+    createdAt: "2026-09-06T13:00:00+05:30",
+  },
+  {
+    id: "m-002",
+    listingId: "pl-101",
+    requirementId: "br-001",
+    matchScore: 74,
+    distanceKm: 92,
+    reasons: [
+      { label: "Quantity compatible", satisfied: false },
+      { label: "Quality compatible", satisfied: true },
+      { label: "Short distance", satisfied: false },
+      { label: "Available within required date", satisfied: true },
+    ],
+    createdAt: "2026-09-06T13:05:00+05:30",
+  },
+  {
+    id: "m-003",
+    listingId: "pl-003",
+    requirementId: "br-101",
+    matchScore: 88,
+    distanceKm: 18,
+    reasons: [
+      { label: "Quantity compatible", satisfied: true },
+      { label: "Quality compatible", satisfied: true },
+      { label: "Short distance", satisfied: true },
+      { label: "Available within required date", satisfied: true },
+    ],
+    createdAt: "2026-09-08T09:30:00+05:30",
+  },
+  {
+    id: "m-004",
+    listingId: "pl-002",
+    requirementId: "br-102",
+    matchScore: 79,
+    distanceKm: 22,
+    reasons: [
+      { label: "Quantity compatible", satisfied: false },
+      { label: "Quality compatible", satisfied: true },
+      { label: "Short distance", satisfied: true },
+      { label: "Available within required date", satisfied: true },
+    ],
+    createdAt: "2026-09-09T10:00:00+05:30",
+  },
+  {
+    id: "m-005",
+    listingId: "pl-102",
+    requirementId: "br-003",
+    matchScore: 83,
+    distanceKm: 65,
+    reasons: [
+      { label: "Quantity compatible", satisfied: true },
+      { label: "Quality compatible", satisfied: true },
+      { label: "Short distance", satisfied: false },
+      { label: "Available within required date", satisfied: true },
+    ],
+    createdAt: "2026-09-11T10:00:00+05:30",
+  },
+];
+
+// ---------------------------------------------------------------------
+// ORDERS
+// ---------------------------------------------------------------------
+export const orders: Order[] = [
+  {
+    id: "ord-001",
+    listingId: "pl-003",
+    requirementId: "br-101",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    buyerId: "b-002",
+    buyerName: "Sitapur District Mandi Board",
+    crop: "Onion",
+    variety: "Nashik Red",
+    quantity: 3000,
+    unit: "kg",
+    agreedPrice: 17,
+    totalValue: 51000,
+    qualityGrade: "B",
+    pickupLocation: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    deliveryLocation: loc(undefined as any, "Sitapur", "Uttar Pradesh", 27.57, 80.68),
+    requiredDeliveryDate: "2026-09-14",
+    status: "in_transit",
+    routeId: "rt-001",
+    timeline: [
+      { status: "pending_confirmation", timestamp: "2026-09-08T10:00:00+05:30" },
+      { status: "confirmed", timestamp: "2026-09-08T15:00:00+05:30" },
+      { status: "in_transit", timestamp: "2026-09-13T06:00:00+05:30", note: "Picked up from farm gate" },
+    ],
+    createdAt: "2026-09-08T10:00:00+05:30",
+  },
+  {
+    id: "ord-002",
+    listingId: "pl-004",
+    requirementId: "br-999",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    buyerId: "b-004",
+    buyerName: "Lucknow Fresh Mart",
+    crop: "Tomato",
+    variety: "Pusa Ruby",
+    quantity: 2500,
+    unit: "kg",
+    agreedPrice: 12,
+    totalValue: 30000,
+    qualityGrade: "A",
+    pickupLocation: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    deliveryLocation: loc(undefined as any, "Lucknow", "Uttar Pradesh", 26.85, 80.95),
+    requiredDeliveryDate: "2026-09-04",
+    status: "delivered",
+    timeline: [
+      { status: "pending_confirmation", timestamp: "2026-08-29T10:00:00+05:30" },
+      { status: "confirmed", timestamp: "2026-08-29T14:00:00+05:30" },
+      { status: "in_transit", timestamp: "2026-09-03T06:00:00+05:30" },
+      { status: "delivered", timestamp: "2026-09-03T19:00:00+05:30", note: "Delivered and accepted" },
+    ],
+    createdAt: "2026-08-29T10:00:00+05:30",
+  },
+  {
+    id: "ord-003",
+    listingId: "pl-001",
+    requirementId: "br-001",
+    farmerId: CURRENT_FARMER_ID,
+    farmerName: CURRENT_FARMER_NAME,
+    buyerId: CURRENT_BUYER_ID,
+    buyerName: CURRENT_BUYER_NAME,
+    crop: "Potato",
+    variety: "Kufri Jyoti",
+    quantity: 8000,
+    unit: "kg",
+    agreedPrice: 14.5,
+    totalValue: 116000,
+    qualityGrade: "A",
+    pickupLocation: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+    deliveryLocation: loc(undefined as any, "Lucknow", "Uttar Pradesh", 26.85, 80.95),
+    requiredDeliveryDate: "2026-09-15",
+    status: "pending_confirmation",
+    timeline: [
+      { status: "pending_confirmation", timestamp: "2026-09-12T09:00:00+05:30", note: "Awaiting buyer confirmation" },
+    ],
+    createdAt: "2026-09-12T09:00:00+05:30",
+  },
+];
+
+// ---------------------------------------------------------------------
+// LOGISTICS
+// ---------------------------------------------------------------------
+const vehicle: Vehicle = {
+  id: "veh-001",
+  registrationNo: "UP32 GT 4471",
+  type: "Mini Truck",
+  capacityKg: 9000,
+  loadedKg: 8000,
+};
+
+export const baselineRoute: Route = {
+  id: "rt-001-baseline",
+  vehicle,
+  isOptimized: false,
+  totalDistanceKm: 148,
+  estimatedDurationMinutes: 285,
+  stops: [
+    {
+      id: "st-1",
+      type: "pickup",
+      label: "Pickup — Mishrikh, Sitapur (Order ord-001)",
+      location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+      orderId: "ord-001",
+      sequence: 1,
+      etaMinutesFromStart: 0,
+    },
+    {
+      id: "st-2",
+      type: "delivery",
+      label: "Delivery — Sitapur Mandi (Order ord-001)",
+      location: loc(undefined as any, "Sitapur", "Uttar Pradesh", 27.57, 80.68),
+      orderId: "ord-001",
+      sequence: 2,
+      etaMinutesFromStart: 70,
+    },
+    {
+      id: "st-3",
+      type: "pickup",
+      label: "Pickup — Mishrikh, Sitapur (Order ord-003)",
+      location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+      orderId: "ord-003",
+      sequence: 3,
+      etaMinutesFromStart: 140,
+    },
+    {
+      id: "st-4",
+      type: "delivery",
+      label: "Delivery — Lucknow (Order ord-003)",
+      location: loc(undefined as any, "Lucknow", "Uttar Pradesh", 26.85, 80.95),
+      orderId: "ord-003",
+      sequence: 4,
+      etaMinutesFromStart: 285,
+    },
+  ],
+};
+
+export const optimizedRoute: Route = {
+  id: "rt-001-optimized",
+  vehicle,
+  isOptimized: true,
+  totalDistanceKm: 112,
+  estimatedDurationMinutes: 215,
+  stops: [
+    {
+      id: "st-1",
+      type: "pickup",
+      label: "Pickup — Mishrikh, Sitapur (Order ord-001 + ord-003)",
+      location: loc("Mishrikh", "Sitapur", "Uttar Pradesh", 27.71, 80.78),
+      orderId: "ord-001",
+      sequence: 1,
+      etaMinutesFromStart: 0,
+    },
+    {
+      id: "st-2",
+      type: "delivery",
+      label: "Delivery — Sitapur Mandi (Order ord-001)",
+      location: loc(undefined as any, "Sitapur", "Uttar Pradesh", 27.57, 80.68),
+      orderId: "ord-001",
+      sequence: 2,
+      etaMinutesFromStart: 65,
+    },
+    {
+      id: "st-3",
+      type: "delivery",
+      label: "Delivery — Lucknow (Order ord-003)",
+      location: loc(undefined as any, "Lucknow", "Uttar Pradesh", 26.85, 80.95),
+      orderId: "ord-003",
+      sequence: 3,
+      etaMinutesFromStart: 215,
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------
+// IMPACT ANALYTICS (all simulated demo figures)
+// ---------------------------------------------------------------------
+export const impactData: ImpactDashboardData = {
+  farmer: {
+    avgPriceRealizationIncreasePercent: 12.4,
+    totalQuantitySold: 5500,
+    unit: "kg",
+  },
+  buyer: {
+    avgProcurementCostChangePercent: -8.1,
+    fulfillmentRatePercent: 82,
+  },
+  logistics: {
+    totalDistanceKm: 112,
+    distanceSavedKm: 36,
+    avgVehicleUtilizationPercent: 89,
+  },
+  supplyChain: {
+    orderFulfillmentRatePercent: 76,
+    wastageOrUnsoldPercent: 9,
+  },
+  forecast: {
+    predictedDemandNextWeek: 9200,
+    unit: "kg",
+    forecastErrorPercent: 11,
+  },
+  isSimulated: true,
+};
