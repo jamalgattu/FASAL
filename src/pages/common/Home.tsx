@@ -32,7 +32,7 @@ const CARDS = [
 export default function Home() {
   return (
     <div className="max-w-3xl mx-auto text-center py-6">
-      <h1 className="text-2xl sm:text-3xl font-semibold text-stone-900">AgriSetu</h1>
+      <h1 className="text-2xl sm:text-3xl font-semibold text-stone-900">Fasal</h1>
       <p className="text-stone-500 mt-2 max-w-xl mx-auto">
         A coordination platform connecting Farmers/FPOs, verified bulk buyers, and logistics
         providers — with supply-demand matching and route planning. Built as an SIH prototype;
