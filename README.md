@@ -1,6 +1,6 @@
-# AgriSetu — Frontend (SIH Problem 26033 MVP)
+# Fasal — Frontend (SIH Problem 26033 MVP)
 
-React + TypeScript + Tailwind CSS frontend for the AgriSetu SIH MVP. The
+React + TypeScript + Tailwind CSS frontend for the Fasal SIH MVP. The
 farmer and buyer services now include the real FastAPI client path, while
 logistics and impact analytics intentionally remain simulated demo screens.
 The mock data layer is still available for those screens and for offline UI
