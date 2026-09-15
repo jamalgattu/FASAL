@@ -51,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
             <Sprout size={20} className="text-green-300" />
-            <span>Fasal</span>
+            <span>AgriSetu</span>
             <span className="hidden sm:inline text-green-300 font-normal text-xs ml-1">
               Supply-Chain Coordination
             </span>
@@ -132,7 +132,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-5">{children}</main>
 
       <footer className="text-center text-xs text-stone-400 py-4 border-t border-stone-200 bg-white">
-        Fasal — SIH Prototype (Problem 26033). Not affiliated with e-NAM. Demo data shown throughout.
+        AgriSetu — SIH Prototype (Problem 26033). Not affiliated with e-NAM. Demo data shown throughout.
       </footer>
     </div>
   );

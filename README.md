@@ -1,8 +1,10 @@
-# Fasal — Frontend (SIH Problem 26033 MVP)
+# AgriSetu — Frontend (SIH Problem 26033 MVP)
 
-Frontend-only prototype: React + TypeScript + Tailwind CSS. No backend, no
-auth, no real APIs, no ML — all data comes from a mock service layer in
-`src/services/` backed by `src/data/mockData.ts`.
+React + TypeScript + Tailwind CSS frontend for the AgriSetu SIH MVP. The
+farmer and buyer services now include the real FastAPI client path, while
+logistics and impact analytics intentionally remain simulated demo screens.
+The mock data layer is still available for those screens and for offline UI
+development.
 
 ## Run it
 
@@ -16,6 +18,17 @@ Then open the printed local URL. To type-check / build:
 ```bash
 npm run build
 ```
+
+## Connect the FastAPI backend
+
+Copy `.env.example` to `.env` and point it at the backend:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+The frontend calls the versioned API under `/api/v1`. The backend project is
+in the sibling `fasal-backend/` directory in the recovered delivery bundle.
 
 ## Folder structure
 
@@ -59,9 +72,20 @@ src/
 - This is a coordination layer, not a generic e-commerce site, and not a
   claimed replacement for e-NAM.
 
-## Swapping in a real backend later
+## GitHub Pages deployment
 
-Each function in `src/services/*.ts` returns a `Promise` shaped exactly like
-the types in `src/types/index.ts`. Replace the function bodies with
-`fetch('/api/...')` calls returning the same shapes — no component code
-needs to change.
+The workflow in `.github/workflows/deploy.yml` builds and publishes this
+frontend to GitHub Pages on every push to `main`. In the repository settings,
+set Pages → Source to **GitHub Actions**. This app uses `HashRouter`, so routes
+look like `https://<user>.github.io/<repo>/#/farmer`.
+
+If the backend is hosted elsewhere, add the deployed frontend origin to the
+backend's `CORS_ORIGINS` setting and set `VITE_API_BASE_URL` before the
+workflow builds.
+
+## Service boundary
+
+Each function in `src/services/*.ts` returns a `Promise` shaped like the
+types in `src/types/index.ts`. `farmerService.ts` and `buyerService.ts` use
+the API client; logistics and analytics intentionally continue to use
+synthetic data until those backend areas are implemented.

@@ -1,5 +1,5 @@
 import React from "react";
-import { Truck, Gauge, Route as RouteIcon, Clock } from "lucide-react";
+import { Truck, Gauge, Route as RouteIcon, TimerReset } from "lucide-react";
 import { logisticsService } from "../../services/logisticsService";
 import { RouteComparison } from "../../types";
 import { Card, PageHeader, StatCard, ProgressBar } from "../../components/ui";
@@ -29,7 +29,7 @@ export default function LogisticsRoutePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <StatCard label="Vehicle" value={optimized.vehicle.registrationNo} sub={optimized.vehicle.type} icon={<Truck size={18} />} accent="stone" />
         <StatCard label="Total Distance" value={`${optimized.totalDistanceKm} km`} icon={<RouteIcon size={18} />} accent="green" />
-        <StatCard label="Est. Duration" value={`${Math.round(optimized.estimatedDurationMinutes / 60)}h ${optimized.estimatedDurationMinutes % 60}m`} icon={<Clock size={18} />} accent="blue" />
+        <StatCard label="Est. Duration" value={`${Math.round(optimized.estimatedDurationMinutes / 60)}h ${optimized.estimatedDurationMinutes % 60}m`} icon={<TimerReset size={18} />} accent="blue" />
         <StatCard label="Vehicle Utilization" value={`${utilization}%`} icon={<Gauge size={18} />} accent="amber" />
       </div>
 

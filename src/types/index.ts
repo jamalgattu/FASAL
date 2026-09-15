@@ -19,11 +19,20 @@ export type ListingStatus =
 export type RequirementStatus = "open" | "matched" | "fulfilled" | "closed";
 
 export type OrderStatus =
+  | "matched"
+  | "accepted"
+  | "reserved"
   | "pending_confirmation"
   | "confirmed"
+  | "pickup_assigned"
+  | "picked_up"
   | "in_transit"
   | "delivered"
-  | "cancelled";
+  | "completed"
+  | "cancelled"
+  | "rejected"
+  | "partially_fulfilled"
+  | "disputed";
 
 export interface Location {
   village?: string;

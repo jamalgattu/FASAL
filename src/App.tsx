@@ -1,6 +1,7 @@
 import React from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { AuthProvider } from "./context/AuthContext";
 
 import Home from "./pages/common/Home";
 
@@ -25,8 +26,9 @@ import ImpactDashboard from "./pages/analytics/ImpactDashboard";
 export default function App() {
   return (
     <HashRouter>
-      <Layout>
-        <Routes>
+      <AuthProvider>
+        <Layout>
+          <Routes>
           <Route path="/" element={<Home />} />
 
           <Route path="/farmer" element={<FarmerDashboard />} />
@@ -46,8 +48,9 @@ export default function App() {
 
           <Route path="/logistics" element={<LogisticsRoutePage />} />
           <Route path="/impact" element={<ImpactDashboard />} />
-        </Routes>
-      </Layout>
+          </Routes>
+        </Layout>
+      </AuthProvider>
     </HashRouter>
   );
 }

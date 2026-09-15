@@ -1,21 +1,39 @@
 import React from "react";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, AlertTriangle } from "lucide-react";
 import { OrderStatus, OrderTimelineEvent } from "../types";
 import { formatDateTime } from "../utils/format";
 
 const STAGES: { status: OrderStatus; label: string }[] = [
-  { status: "pending_confirmation", label: "Pending Confirmation" },
+  { status: "matched", label: "Matched" },
+  { status: "accepted", label: "Accepted" },
+  { status: "reserved", label: "Reserved" },
   { status: "confirmed", label: "Confirmed" },
+  { status: "pickup_assigned", label: "Pickup Assigned" },
+  { status: "picked_up", label: "Picked Up" },
   { status: "in_transit", label: "In Transit" },
   { status: "delivered", label: "Delivered" },
+  { status: "completed", label: "Completed" },
 ];
 
+const SIDE_BRANCH_LABELS: Partial<Record<OrderStatus, string>> = {
+  cancelled: "Order cancelled",
+  rejected: "Order rejected",
+  disputed: "Order under dispute",
+  partially_fulfilled: "Partially fulfilled",
+};
+
 export function OrderTimeline({ timeline, currentStatus }: { timeline: OrderTimelineEvent[]; currentStatus: OrderStatus }) {
-  if (currentStatus === "cancelled") {
+  const sideBranchLabel = SIDE_BRANCH_LABELS[currentStatus];
+  if (sideBranchLabel) {
     const event = timeline[timeline.length - 1];
     return (
-      <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm font-medium">
-        Order cancelled{event ? ` on ${formatDateTime(event.timestamp)}` : ""}.
+      <div className="rounded-lg bg-amber-50 text-amber-800 px-4 py-3 text-sm">
+        <p className="flex items-center gap-1.5 font-medium">
+          <AlertTriangle size={15} />
+          {sideBranchLabel}
+        </p>
+        {event && <p className="text-xs text-amber-700 mt-1">{formatDateTime(event.timestamp)}</p>}
+        {event?.note && <p className="text-xs text-amber-700 mt-0.5">{event.note}</p>}
       </div>
     );
   }
